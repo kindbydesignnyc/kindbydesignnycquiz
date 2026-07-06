@@ -1,0 +1,796 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Build Your KBD Experience</title>
+<link rel="icon" type="image/png" href="favicon.png">
+<link href="https://fonts.googleapis.com/css2?family=Gilda+Display&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--blue:#71b4d6;--bl:#c6eafd;--bd:#4a8fad;--bk:#111;--gr:#555;--gl:#f7f7f7;--br:#e2e2e2;--wh:#fff;--pk:#f4c6d4;--pkd:#c97a96;--sf:'Gilda Display',Georgia,serif;--sn:'Lato',sans-serif}
+body{font-family:var(--sn);background:var(--wh);color:var(--bk);min-height:100vh;font-weight:300;line-height:1.6}
+.page{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:3rem 1.5rem}
+.inner{width:100%;max-width:600px}
+.brand{text-align:center;margin-bottom:2.5rem}
+.bname{font-family:var(--sf);font-size:12px;letter-spacing:0.25em;text-transform:uppercase;color:var(--bd)}
+.bdiv{width:40px;height:1px;background:var(--blue);margin:0.6rem auto}
+.qname{font-family:var(--sf);font-size:26px;color:var(--bk);margin-top:0.4rem}
+.pw{margin-bottom:2rem}
+.pm{display:flex;justify-content:space-between;margin-bottom:0.5rem}
+.pl,.pc{font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:var(--gr)}
+.pt{height:2px;background:var(--br);border-radius:1px}
+.pf{height:100%;background:var(--blue);border-radius:1px;transition:width 0.4s}
+.step{display:none}.step.active{display:block}
+.q{font-family:var(--sf);font-size:30px;line-height:1.25;color:var(--bk);margin-bottom:0.5rem}
+.q em{font-style:italic;color:var(--bd)}
+.sub{font-size:14px;color:var(--gr);margin-bottom:1.75rem;font-weight:300;line-height:1.6}
+.opts{display:flex;flex-direction:column;gap:10px;margin-bottom:1.75rem}
+.opt{display:flex;align-items:flex-start;gap:14px;padding:16px 18px;border:1px solid var(--br);background:var(--wh);cursor:pointer;transition:all 0.15s;text-align:left;width:100%}
+.opt:hover{border-color:var(--blue);background:#f0f8fd}
+.opt.on{border:1.5px solid var(--blue);background:var(--bl)}
+.mk{width:18px;height:18px;border-radius:50%;border:1.5px solid var(--br);flex-shrink:0;margin-top:2px;display:flex;align-items:center;justify-content:center;background:var(--wh);pointer-events:none}
+.opt.on .mk{background:var(--blue);border-color:var(--blue)}
+.dt{display:none;width:6px;height:6px;background:#fff;border-radius:50%}
+.opt.on .dt{display:block}
+.sq{border-radius:3px}
+.ck{display:none;font-size:10px;font-weight:700;color:#fff}
+.opt.on .ck{display:block}
+.ot{font-size:15px;color:var(--bk);line-height:1.4;pointer-events:none}
+.os{font-size:12px;color:var(--gr);margin-top:3px;pointer-events:none}
+.nav{display:flex;align-items:center;justify-content:space-between;margin-top:0.5rem}
+.bb{font-family:var(--sn);font-size:13px;color:var(--gr);background:none;border:none;cursor:pointer;padding:0}
+.bb:hover{color:var(--bk)}
+.bn2{font-family:var(--sn);font-size:12px;font-weight:500;letter-spacing:0.18em;text-transform:uppercase;color:#fff;background:var(--bd);border:none;padding:14px 32px;cursor:pointer;transition:all 0.15s}
+.bn2:hover{background:var(--blue)}
+.bn2:disabled{background:var(--br);color:#aaa;cursor:default}
+.result{display:none}.result.active{display:block}
+.r-eyebrow{font-size:11px;letter-spacing:0.2em;text-transform:uppercase;color:var(--bd);font-weight:500;margin-bottom:1rem}
+.r-card{border:1px solid var(--br);padding:1.75rem;margin-bottom:1.25rem}
+.r-card.primary{border-color:var(--blue);border-width:1.5px}
+.r-altbar{background:var(--bd);color:#fff;text-align:center;font-size:11px;letter-spacing:0.15em;text-transform:uppercase;font-weight:500;padding:10px 16px;margin:0.5rem 0 1.25rem}
+.r-email-cap{margin-top:2rem;padding:1.5rem 1.25rem;background:var(--bl);text-align:center}
+.r-email-label{font-size:14px;color:var(--bk);margin-bottom:0.75rem;font-weight:600;font-family:var(--sf)}
+.r-email-row{display:flex;gap:0.5rem;max-width:400px;margin:0 auto}
+.r-email-row input{flex:1;border:1px solid var(--br);padding:10px 12px;font-family:var(--sn);font-size:13px;outline:none}
+.r-email-row input:focus{border-color:var(--pkd)}
+.r-email-row button{background:var(--bd);color:#fff;border:none;padding:10px 18px;font-family:var(--sn);font-size:12px;letter-spacing:0.1em;text-transform:uppercase;cursor:pointer;white-space:nowrap;font-weight:700}
+.r-tag{font-size:10px;letter-spacing:0.18em;text-transform:uppercase;font-weight:500;margin-bottom:0.4rem;color:var(--bd)}
+.r-tag.alt{color:var(--gr)}
+.r-title{font-family:var(--sf);font-size:26px;line-height:1.2;color:var(--bk);margin-bottom:0.2rem}
+.r-price{font-family:var(--sf);font-size:16px;color:var(--bd);font-style:italic;margin-bottom:0.75rem}
+.r-honest{font-size:13px;color:var(--gr);font-style:italic;margin-bottom:0.75rem;padding:0.6rem 0.9rem;border-left:2px solid var(--bl);background:var(--gl)}
+.r-body{font-size:14px;color:var(--gr);line-height:1.7;margin-bottom:0.9rem;font-weight:300}
+.r-inc{background:var(--gl);padding:1rem 1.2rem;margin-bottom:0}
+.r-inc-lbl{font-size:10px;letter-spacing:0.15em;text-transform:uppercase;color:var(--gr);font-weight:500;margin-bottom:0.5rem}
+.r-inc ul{list-style:none}
+.r-inc ul li{font-size:13px;color:var(--bk);padding:3px 0;display:flex;gap:8px;font-weight:300;line-height:1.4}
+.r-inc ul li::before{content:'—';color:var(--blue);flex-shrink:0}
+.note-card{border-left:3px solid var(--blue);padding:0.75rem 1rem;margin-bottom:1rem;font-size:13px;color:var(--gr);background:var(--gl)}
+.note-card strong{color:var(--bk);font-weight:500}
+.dv{width:40px;height:1px;background:var(--bl);margin:2rem 0}
+.cw{display:flex;flex-direction:column;gap:10px;margin-top:1.5rem}
+.cp{font-family:var(--sn);font-size:12px;font-weight:500;letter-spacing:0.18em;text-transform:uppercase;color:#fff;background:var(--bd);border:none;padding:16px 32px;cursor:pointer;width:100%;text-align:center;text-decoration:none;display:block;transition:all 0.15s}
+.cp:hover{background:var(--blue)}
+.cp:disabled{background:var(--br);color:#aaa;cursor:default}
+.cs{font-family:var(--sn);font-size:12px;letter-spacing:0.1em;color:var(--gr);background:transparent;border:1px solid var(--br);padding:14px 32px;width:100%;text-align:center;text-decoration:none;display:block;transition:all 0.15s}
+.cs:hover{border-color:var(--blue);color:var(--bd)}
+.rs{text-align:center;margin-top:1.25rem}
+.rs button{font-size:12px;color:var(--gr);background:none;border:none;cursor:pointer;text-decoration:underline;font-family:var(--sn)}
+label{font-size:11px;letter-spacing:0.12em;text-transform:uppercase;color:var(--gr);font-weight:400;display:block;margin-bottom:6px}
+input[type=text],input[type=email]{width:100%;padding:14px 16px;border:1px solid var(--br);font-family:var(--sn);font-size:15px;color:var(--bk);outline:none;background:var(--wh);transition:border 0.15s}
+input:focus{border-color:var(--blue)}
+.fg{margin-bottom:12px}
+.cb-row{display:flex;align-items:center;gap:10px;margin-bottom:1.5rem;cursor:pointer}
+.cb-row input[type=checkbox]{width:16px;height:16px;accent-color:var(--blue);cursor:pointer;flex-shrink:0}
+.cb-row span{font-size:13px;color:var(--gr);font-weight:300}
+@media(max-width:480px){.q{font-size:24px}.r-title{font-size:22px}.page{padding:2rem 1.25rem}}
+</style>
+</head>
+<body>
+<div class="page"><div class="inner">
+
+<div class="brand">
+  <div class="bname">Kind By Design NYC</div>
+  <div class="bdiv"></div>
+  <div class="qname">Build Your Experience</div>
+</div>
+
+<div class="pw">
+  <div class="pm"><span class="pl" id="pl">Getting started</span><span class="pc" id="pc"></span></div>
+  <div class="pt"><div class="pf" id="pf" style="width:8%"></div></div>
+</div>
+
+<!-- S1 -->
+<div class="step active" id="s1">
+  <p class="q">What best<br><em>describes you?</em></p>
+  <p class="sub">This helps us point you in the right direction.</p>
+  <div class="opts" id="o-s1">
+    <div class="opt" data-s="s1" data-v="agency"><div class="mk"><div class="dt"></div></div><div><div class="ot">I run an agency</div><div class="os">Any creative or marketing agency — social, PR, ads, OBM, VA, and more</div></div></div>
+    <div class="opt" data-s="s1" data-v="owner"><div class="mk"><div class="dt"></div></div><div><div class="ot">I'm a business owner</div><div class="os">Wellness, beauty, hospitality, or lifestyle</div></div></div>
+  </div>
+  <div class="nav"><span></span><button class="bn2" id="n1" disabled onclick="nx()">Continue</button></div>
+</div>
+
+<!-- AGENCY PATH -->
+<div class="step" id="s2a">
+  <p class="q">What do you<br><em>need from us?</em></p>
+  <div class="opts" id="o-s2a">
+    <div class="opt" data-s="s2a" data-v="social"><div class="mk"><div class="dt"></div></div><div class="ot">Social media content</div></div>
+    <div class="opt" data-s="s2a" data-v="ads"><div class="mk"><div class="dt"></div></div><div><div class="ot">Ad creative</div><div class="os">Static visuals only — no ad copy written by Kind By Design NYC</div></div></div>
+    <div class="opt" data-s="s2a" data-v="both"><div class="mk"><div class="dt"></div></div><div><div class="ot">Both</div><div class="os">We'll show you both options on your results screen</div></div></div>
+  </div>
+  <div class="nav"><button class="bb" onclick="bk()">← Back</button><button class="bn2" id="n2a" disabled onclick="nx()">Continue</button></div>
+</div>
+
+<div class="step" id="s2b">
+  <p class="q">Is this for your own agency<br><em>or your clients?</em></p>
+  <div class="opts" id="o-s2b">
+    <div class="opt" data-s="s2b" data-v="own"><div class="mk"><div class="dt"></div></div><div class="ot">For my own agency</div></div>
+    <div class="opt" data-s="s2b" data-v="clients"><div class="mk"><div class="dt"></div></div><div class="ot">For my clients</div></div>
+    <div class="opt" data-s="s2b" data-v="both"><div class="mk"><div class="dt"></div></div><div class="ot">Both</div></div>
+  </div>
+  <div class="nav"><button class="bb" onclick="bk()">← Back</button><button class="bn2" id="n2b" disabled onclick="nx()">Continue</button></div>
+</div>
+
+<div class="step" id="s2c">
+  <p class="q">How many clients are<br><em>we creating for?</em></p>
+  <p class="sub">This determines your tier and any applicable volume discounts.</p>
+  <div class="opts" id="o-s2c">
+    <div class="opt" data-s="s2c" data-v="wl1"><div class="mk"><div class="dt"></div></div><div class="ot">1–3 clients</div></div>
+    <div class="opt" data-s="s2c" data-v="wl2"><div class="mk"><div class="dt"></div></div><div><div class="ot">4–6 clients</div><div class="os">10% volume discount applied</div></div></div>
+    <div class="opt" data-s="s2c" data-v="wl3"><div class="mk"><div class="dt"></div></div><div><div class="ot">7–10 clients</div><div class="os">15% volume discount applied</div></div></div>
+    <div class="opt" data-s="s2c" data-v="wl4"><div class="mk"><div class="dt"></div></div><div><div class="ot">More than 10 clients</div><div class="os">We'll scope this on a discovery call</div></div></div>
+  </div>
+  <div class="nav"><button class="bb" onclick="bk()">← Back</button><button class="bn2" id="n2c" disabled onclick="nx()">Continue</button></div>
+</div>
+
+<div class="step" id="s3a">
+  <p class="q">Do you need us to<br><em>schedule and post too?</em></p>
+  <p class="sub">Scheduling covers social content only. Ad creative is always delivered to your portal for you to manage through your own ad manager.</p>
+  <div class="opts" id="o-s3a">
+    <div class="opt" data-s="s3a" data-v="yes"><div class="mk"><div class="dt"></div></div><div><div class="ot">Yes — handle scheduling, stories, links, and polls</div><div class="os">Includes a dedicated one-on-one Slack channel</div></div></div>
+    <div class="opt" data-s="s3a" data-v="no"><div class="mk"><div class="dt"></div></div><div class="ot">No — we handle our own posting</div></div>
+  </div>
+  <div class="nav"><button class="bb" onclick="bk()">← Back</button><button class="bn2" id="n3a" disabled onclick="nx()">Continue</button></div>
+</div>
+
+
+<!-- S3AC agency client addons -->
+<div class="step" id="s3ac">
+  <p class="q">Do your clients need<br><em>anything else?</em></p>
+  <p class="sub">Select everything that applies — we'll include it in their results.</p>
+  <div class="opts" id="o-s3ac">
+    <div class="opt" data-s="s3ac" data-v="cl_web" data-m="1"><div class="mk sq"><div class="ck">✓</div></div><div><div class="ot">Websites or templates built for clients</div><div class="os">One-page ($1,800) · 3 pages ($3,000) · 6 pages ($6,000) (discounts will be shown on final screen)</div></div></div>
+    <div class="opt" data-s="s3ac" data-v="cl_brand" data-m="1"><div class="mk sq"><div class="ck">✓</div></div><div><div class="ot">Mini branding for clients</div><div class="os">Color palette, font pairings, and wordmark logo — $500 per client</div></div></div>
+    <div class="opt" data-s="s3ac" data-v="cl_none" data-m="1"><div class="mk sq"><div class="ck">✓</div></div><div class="ot">No — just the content support</div></div>
+  </div>
+  <div class="nav"><button class="bb" onclick="bk()">← Back</button><button class="bn2" id="n3ac" onclick="nx()">Continue</button></div>
+</div>
+
+<div class="step" id="sba">
+  <p class="q">Who are<br><em>your clients?</em></p>
+  <p class="sub">This helps us show you the most relevant options.</p>
+  <div class="opts" id="o-sba">
+    <div class="opt" data-s="sba" data-v="starter"><div class="mk"><div class="dt"></div></div><div><div class="ot">Early stage businesses and startups</div><div class="os">New brands finding their footing</div></div></div>
+    <div class="opt" data-s="sba" data-v="growing"><div class="mk"><div class="dt"></div></div><div><div class="ot">Established businesses</div><div class="os">5+ years in, consistent brand, higher expectations</div></div></div>
+    <div class="opt" data-s="sba" data-v="ready"><div class="mk"><div class="dt"></div></div><div><div class="ot">High-growth and premium brands</div><div class="os">7-8 figure clients who expect a lot and need a lot</div></div></div>
+  </div>
+  <div class="nav"><button class="bb" onclick="bk()">← Back</button><button class="bn2" id="nba" disabled onclick="nx()">Continue</button></div>
+</div>
+
+<!-- OWNER PATH -->
+<div class="step" id="o2">
+  <p class="q">What are you<br><em>looking for help with?</em></p>
+  <p class="sub">Select everything that applies — we'll show you options for each.</p>
+  <div class="opts" id="o-o2">
+    <div class="opt" data-s="o2" data-v="branding" data-m="1"><div class="mk sq"><div class="ck">✓</div></div><div class="ot">Branding</div></div>
+    <div class="opt" data-s="o2" data-v="social" data-m="1"><div class="mk sq"><div class="ck">✓</div></div><div class="ot">Social media content</div></div>
+    <div class="opt" data-s="o2" data-v="website" data-m="1"><div class="mk sq"><div class="ck">✓</div></div><div class="ot">Website</div></div>
+    <div class="opt" data-s="o2" data-v="marketing" data-m="1"><div class="mk sq"><div class="ck">✓</div></div><div><div class="ot">Overall marketing help</div><div class="os">Sprints, VIP Days, ads, and more — we'll show you the right fit</div></div></div>
+  </div>
+  <div class="nav"><button class="bb" onclick="bk()">← Back</button><button class="bn2" id="no2" onclick="nx()">Continue</button></div>
+</div>
+
+<div class="step" id="o3">
+  <p class="q">What do you<br><em>currently have?</em></p>
+  <p class="sub">Select everything you already have — this helps us understand where you are.</p>
+  <div class="opts" id="o-o3">
+    <div class="opt" data-s="o3" data-v="logo" data-m="1"><div class="mk sq"><div class="ck">✓</div></div><div class="ot">Logo</div></div>
+    <div class="opt" data-s="o3" data-v="colors" data-m="1"><div class="mk sq"><div class="ck">✓</div></div><div class="ot">Color palette</div></div>
+    <div class="opt" data-s="o3" data-v="fonts" data-m="1"><div class="mk sq"><div class="ck">✓</div></div><div class="ot">Font pairings</div></div>
+    <div class="opt" data-s="o3" data-v="website" data-m="1"><div class="mk sq"><div class="ck">✓</div></div><div class="ot">Website</div></div>
+    <div class="opt" data-s="o3" data-v="none" data-m="1"><div class="mk sq"><div class="ck">✓</div></div><div class="ot">None of these yet</div></div>
+  </div>
+  <div class="nav"><button class="bb" onclick="bk()">← Back</button><button class="bn2" id="no3" onclick="nx()">Continue</button></div>
+</div>
+
+<div class="step" id="o-web">
+  <p class="q">What size<br><em>website do you need?</em></p>
+  <div class="opts" id="o-o-web">
+    <div class="opt" data-s="o-web" data-v="onepage"><div class="mk"><div class="dt"></div></div><div><div class="ot">One page</div><div class="os">$1,800</div></div></div>
+    <div class="opt" data-s="o-web" data-v="threepage"><div class="mk"><div class="dt"></div></div><div><div class="ot">3 pages</div><div class="os">$3,000</div></div></div>
+    <div class="opt" data-s="o-web" data-v="sixpage"><div class="mk"><div class="dt"></div></div><div><div class="ot">6 pages</div><div class="os">$6,000 · includes wordmark logo</div></div></div>
+  </div>
+  <div class="nav"><button class="bb" onclick="bk()">← Back</button><button class="bn2" id="no-web" disabled onclick="nx()">Continue</button></div>
+</div>
+
+<div class="step" id="o-loc">
+  <p class="q">Since you selected<br><em>social help — where are you located?</em></p>
+  <p class="sub">This helps us show you the right content options.</p>
+  <div class="opts" id="o-o-loc">
+    <div class="opt" data-s="o-loc" data-v="tampa"><div class="mk"><div class="dt"></div></div><div class="ot">Tampa</div></div>
+    <div class="opt" data-s="o-loc" data-v="orlando"><div class="mk"><div class="dt"></div></div><div class="ot">Orlando</div></div>
+    <div class="opt" data-s="o-loc" data-v="miami"><div class="mk"><div class="dt"></div></div><div class="ot">Miami</div></div>
+    <div class="opt" data-s="o-loc" data-v="nyc"><div class="mk"><div class="dt"></div></div><div class="ot">NYC</div></div>
+    <div class="opt" data-s="o-loc" data-v="other"><div class="mk"><div class="dt"></div></div><div class="ot">Other</div></div>
+  </div>
+  <div class="nav"><button class="bb" onclick="bk()">← Back</button><button class="bn2" id="no-loc" disabled onclick="nx()">Continue</button></div>
+</div>
+
+<div class="step" id="o-bud">
+  <p class="q">What feels<br><em>most aligned?</em></p>
+  <p class="sub">This helps us show you the most relevant options.</p>
+  <div class="opts" id="o-o-bud">
+    <div class="opt" data-s="o-bud" data-v="starter"><div class="mk"><div class="dt"></div></div><div class="ot">Just getting started — I don't have much to invest right now</div></div>
+    <div class="opt" data-s="o-bud" data-v="growing"><div class="mk"><div class="dt"></div></div><div class="ot">Growing steadily — I'm ready to hire ongoing help</div></div>
+    <div class="opt" data-s="o-bud" data-v="ready"><div class="mk"><div class="dt"></div></div><div class="ot">Ready to invest fully and grow</div></div>
+  </div>
+  <div class="nav"><button class="bb" onclick="bk()">← Back</button><button class="bn2" id="no-bud" disabled onclick="nx()">Continue</button></div>
+</div>
+
+<!-- Results shown immediately after last question -->
+<div class="result" id="rb"></div>
+
+</div></div>
+
+<script>
+var S={who:null,aa:null,ab:null,ac:null,ap:null,bud:null,o2:[],o3:[],web:null,loc:null,clAdds:[]};
+var H=[],cur='s1';
+var _sub={name:'',email:'',biz:'',summary:'',newsletter:''};
+var NM={s1:1,s2a:2,s2b:3,s2c:4,s3a:4,s3ac:5,sba:5,o2:2,o3:3,'o-web':4,'o-loc':4,'o-bud':5};
+var LB={s1:'Who are you?',s2a:'What do you need?',s2b:'Own agency or clients?',s2c:'How many clients?',s3a:'Scheduling & posting',s3ac:'Client add-ons',sba:'Who are your clients?',o2:'What do you need help with?',o3:'What do you have?','o-web':'Website size','o-loc':'Your location','o-bud':'What feels most aligned?'};
+var NXBTNS={s1:'n1',s2a:'n2a',s2b:'n2b',s2c:'n2c',s3a:'n3a',sba:'nba','o-web':'no-web','o-loc':'no-loc','o-bud':'no-bud'};
+
+document.addEventListener('click',function(e){
+  var o=e.target.closest('.opt');
+  if(!o)return;
+  var s=o.dataset.s,v=o.dataset.v,m=o.dataset.m;
+  if(m){
+    var c=document.getElementById('o-'+s);
+    if(s==='s3ac'){
+      if(v==='cl_none'){
+        c.querySelectorAll('.opt').forEach(function(x){x.classList.remove('on')});
+        o.classList.add('on');
+        S.clAdds=['cl_none'];
+      }else{
+        var ncl=c.querySelector('[data-v="cl_none"]');if(ncl)ncl.classList.remove('on');
+        o.classList.toggle('on');
+        S.clAdds=Array.from(c.querySelectorAll('.opt.on')).map(function(x){return x.dataset.v}).filter(function(x){return x!=='cl_none'});
+      }
+    }else if(s==='o3'){
+      if(v==='none'){
+        c.querySelectorAll('.opt').forEach(function(x){x.classList.remove('on')});
+        o.classList.add('on');
+        S.o3=['none'];
+      }else{
+        var ne3=c.querySelector('[data-v="none"]');if(ne3)ne3.classList.remove('on');
+        o.classList.toggle('on');
+        S.o3=Array.from(c.querySelectorAll('.opt.on')).map(function(x){return x.dataset.v}).filter(function(x){return x!=='none'});
+      }
+    }else if(s==='o2'){
+      o.classList.toggle('on');
+      S.o2=Array.from(c.querySelectorAll('.opt.on')).map(function(x){return x.dataset.v});
+    }
+  }else{
+    document.querySelectorAll('#o-'+s+' .opt').forEach(function(x){x.classList.remove('on')});
+    o.classList.add('on');
+    if(s==='s1')S.who=v;
+    else if(s==='s2a')S.aa=v;
+    else if(s==='s2b')S.ab=v;
+    else if(s==='s2c')S.ac=v;
+    else if(s==='s3a')S.ap=v;
+    else if(s==='sba')S.bud=v;
+    else if(s==='o-bud')S.bud=v;
+    else if(s==='o-web')S.web=v;
+    else if(s==='o-loc')S.loc=v;
+    var nb=NXBTNS[s];if(nb){var b=document.getElementById(nb);if(b)b.disabled=false;}
+  }
+});
+
+function gt(id){
+  document.querySelectorAll('.step').forEach(function(x){x.classList.remove('active')});
+  document.getElementById(id).classList.add('active');
+  cur=id;
+  var n=NM[id]||1;
+  document.getElementById('pf').style.width=Math.round(n/6*100)+'%';
+  document.getElementById('pl').textContent=LB[id]||'';
+  document.getElementById('pc').textContent=n+' of 6';
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function nx(){
+  H.push(cur);
+  if(cur==='s1'){
+    gt(S.who==='agency'?'s2a':'o2');
+  }
+  else if(cur==='s2a')gt('s2b');
+  else if(cur==='s2b'){
+    var needCl=S.ab==='clients'||S.ab==='both';
+    if(needCl)gt('s2c');
+    else{if(S.aa==='social'||S.aa==='both')gt('s3a');else gt('sba');}
+  }
+  else if(cur==='s2c'){
+    if(S.ac==='wl4'){disc();return;}
+    if(S.aa==='social'||S.aa==='both')gt('s3a');else gt('sba');
+  }
+  else if(cur==='s3a'){var isCl2=S.ab==='clients'||S.ab==='both';gt(isCl2?'s3ac':'sba');}
+  else if(cur==='s3ac')gt('sba');
+  else if(cur==='sba'){sr();return;}
+  else if(cur==='o2'){
+    gt('o3');
+  }
+  else if(cur==='o3'){
+    var needsWeb=S.o2.indexOf('website')>-1 && S.o3.indexOf('website')===-1;
+    if(needsWeb){gt('o-web');return;}
+    var needsLoc=S.o2.indexOf('social')>-1;
+    if(needsLoc){gt('o-loc');return;}
+    gt('o-bud');
+  }
+  else if(cur==='o-web'){
+    var needsLoc2=S.o2.indexOf('social')>-1;
+    if(needsLoc2){gt('o-loc');return;}
+    gt('o-bud');
+  }
+  else if(cur==='o-loc')gt('o-bud');
+  else if(cur==='o-bud'){sr();return;}
+}
+
+function bk(){
+  if(!H.length)return;
+  var p=H.pop();
+  document.querySelectorAll('.step').forEach(function(x){x.classList.remove('active')});
+  document.getElementById(p).classList.add('active');
+  cur=p;
+  var n=NM[p]||1;
+  document.getElementById('pf').style.width=Math.round(n/6*100)+'%';
+  document.getElementById('pl').textContent=LB[p]||'';
+  document.getElementById('pc').textContent=n+' of 6';
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function disc(){
+  document.querySelectorAll('.step').forEach(function(x){x.classList.remove('active')});
+  document.getElementById('pf').style.width='100%';
+  document.getElementById('rb').className='result active';
+  document.getElementById('rb').innerHTML='<p class="r-eyebrow">Let\'s talk</p><p style="font-family:\'Gilda Display\',serif;font-size:28px;color:#111;margin-bottom:1rem">You need a custom scope.</p><p style="font-size:15px;color:#555;line-height:1.75;margin-bottom:1.5rem;font-weight:300">With 10+ clients we want to scope this properly before giving you a number. Book a quick call and we\'ll put together exactly what you need.</p><div class="cw"><a href="https://kindbydesignnyc.hbportal.co/schedule/69f904cb679df98b5ce94a96" target="_blank" class="cp">Book a discovery call</a></div><div class="rs"><button onclick="rst()">Start over</button></div>';
+}
+
+var allCards=[];
+function card(isPrimary,title,price,honestLine,body,incs,customTag){
+  allCards.push(title+' ('+price+')');
+  var list=incs.filter(Boolean).map(function(i){return '<li>'+i+'</li>'}).join('');
+  var tagText=(customTag!==undefined)?customTag:(isPrimary?'Best fit for you':'');
+  return '<div class="r-card'+(isPrimary?' primary':'')+'">'+
+    (tagText?'<p class="r-tag'+(isPrimary?'':' alt')+'">'+tagText+'</p>':'')+
+    '<p class="r-title">'+title+'</p>'+
+    '<p class="r-price">'+price+'</p>'+
+    (honestLine?'<p class="r-honest">'+honestLine+'</p>':'')+
+    (body?'<p class="r-body">'+body+'</p>':'')+
+    '<div class="r-inc"><p class="r-inc-lbl">What\'s included</p><ul>'+list+'</ul></div>'+
+    '</div>';
+}
+function blueBar(label){
+  return '<div class="r-altbar">'+(label||'Other options within your range')+'</div>';
+}
+
+function sr(){
+  var fn='', fe='', fb='', nl=false;
+  document.querySelectorAll('.step').forEach(function(x){x.classList.remove('active')});
+  document.getElementById('pf').style.width='100%';
+  document.getElementById('pl').textContent='Your results';
+  document.getElementById('pc').textContent='';
+
+  var html='<p class="r-eyebrow">Our top suggestions based on your responses</p>';
+  var summary='';
+  var extra='';
+  var missing=[];
+  allCards=[];
+
+  if(S.who==='agency'){
+    var posting=S.ap==='yes';
+    var isOwn=S.ab==='own'||S.ab==='both';
+    var isCl=S.ab==='clients'||S.ab==='both';
+    var isSocial=S.aa==='social'||S.aa==='both';
+    var isAds=S.aa==='ads'||S.aa==='both';
+
+    // White label discounts
+    var wlBase=875, wlMgmt=1075;
+    var wlDisc={wl1:1,wl2:0.9,wl3:0.85};
+    var wlLabel={wl1:'1–3',wl2:'4–6',wl3:'7–10'};
+    var discNote={wl1:'',wl2:' (10% volume discount applied)',wl3:' (15% volume discount applied)'};
+
+    var cc2=0;
+    var agPrimaryHtml='';
+    var agSecondaryHtml='';
+
+    // AGENCY BRAND ASSETS (own social)
+    if(isOwn&&isSocial){
+      var higherBudget=S.bud==='growing'||S.bud==='ready';
+      if(higherBudget){
+        agPrimaryHtml+=card(cc2===0,'Agency Brand Assets + Scheduling','$1,075/month','',
+          'Social content for your own agency with scheduling, stories, and posting handled for you.',
+          ['12 posts/month — carousels, graphics, reels','You provide all direction and copy','Scheduling, stories, links, and polls managed by Kind By Design NYC','Dedicated one-on-one Slack channel','Month-to-month · 30 days notice required']);
+        if(!summary)summary='Agency Brand Assets + Scheduling $1,075/month';
+        cc2++;
+        agSecondaryHtml+=card(false,'Agency Brand Assets (assets only)','$875/month','',
+          'Prefer to handle posting yourself? Assets delivered to you to post.',
+          ['12 posts/month — carousels, graphics, reels','You provide all direction and copy','Assets delivered to you to post yourself','Month-to-month · 30 days notice required']);
+      }else{
+        agPrimaryHtml+=card(cc2===0,'Agency Brand Assets','$875/month','',
+          'Social content for your own agency built to the direction and copy you provide.',
+          ['12 posts/month — carousels, graphics, reels','You provide all direction and copy','Assets delivered to you to post yourself','Month-to-month · 30 days notice required']);
+        if(!summary)summary='Agency Brand Assets $875/month';
+        cc2++;
+        agSecondaryHtml+=card(false,'Agency Brand Assets + Scheduling','$1,075/month','',
+          'Want us to handle posting too? Add scheduling, stories, and a Slack channel.',
+          ['12 posts/month — carousels, graphics, reels','You provide all direction and copy','Scheduling, stories, links, and polls managed by Kind By Design NYC','Dedicated one-on-one Slack channel','Month-to-month · 30 days notice required']);
+      }
+    }
+
+    // WHITE LABEL SOCIAL CONTENT (clients)
+    if(isCl&&isSocial&&S.ac&&S.ac!=='wl4'){
+      var d=wlDisc[S.ac]||1;
+      var pb=Math.round(wlBase*d), pm=Math.round(wlMgmt*d);
+      var higherBudgetWL=S.bud==='growing'||S.bud==='ready';
+      if(higherBudgetWL){
+        agPrimaryHtml+=card(cc2===0,'White Label Social Content + Scheduling','$'+pm+'/month'+discNote[S.ac],'',
+          'We work behind the scenes building and posting content for your clients. Your brand stays front and center.',
+          ['Social content built for '+wlLabel[S.ac]+' clients monthly','12 posts per client/month — carousels, graphics, reels','You provide all direction and copy per client','Scheduling, stories, and posting managed per client','Dedicated one-on-one Slack channel','Month-to-month · 30 days notice required']);
+        if(!summary)summary='White Label '+wlLabel[S.ac]+' clients (with scheduling) $'+pm+'/month'+discNote[S.ac];
+        cc2++;
+        agSecondaryHtml+=card(false,'White Label Social Content (assets only)','$'+pb+'/month'+discNote[S.ac],'',
+          'Prefer to handle posting yourself? Assets delivered in organized folders per client.',
+          ['Social content built for '+wlLabel[S.ac]+' clients monthly','12 posts per client/month — carousels, graphics, reels','You provide all direction and copy per client','Assets delivered in organized folders per client','Month-to-month · 30 days notice required']);
+      }else{
+        agPrimaryHtml+=card(cc2===0,'White Label Social Content','$'+pb+'/month'+discNote[S.ac],'',
+          'We work behind the scenes building content for your clients. Your brand stays front and center.',
+          ['Social content built for '+wlLabel[S.ac]+' clients monthly','12 posts per client/month — carousels, graphics, reels','You provide all direction and copy per client','Assets delivered in organized folders per client','Month-to-month · 30 days notice required']);
+        if(!summary)summary='White Label '+wlLabel[S.ac]+' clients $'+pb+'/month'+discNote[S.ac];
+        cc2++;
+        agSecondaryHtml+=card(false,'White Label Social Content + Scheduling','$'+pm+'/month'+discNote[S.ac],'',
+          'Want us to handle posting too? Scheduling, stories, and a Slack channel included.',
+          ['Social content built for '+wlLabel[S.ac]+' clients monthly','12 posts per client/month','Scheduling, stories, and posting managed per client','Dedicated one-on-one Slack channel','Month-to-month · 30 days notice required']);
+      }
+      extra+='<div class="ac"><strong>Want to add engagement?</strong> Community building and engagement sessions are available as an add-on from $400–$500/month depending on your client count. We\'ll go over this on your call.</div>';
+    }
+
+    // AD CREATIVE
+    if(isAds){
+      var adIncs=['Ads formatted to your provided guidelines','Visuals only — no ad copy written by Kind By Design NYC','Delivered to your personal portal for approval','Month-to-month · 30 days notice required'];
+      if(S.bud==='ready'){
+        agPrimaryHtml+=card(cc2===0,'Ad Creative — Full','$1,575/month · 20 creatives/month','',
+          'Static ad creatives built to your provided guidelines. You provide direction — we deliver polished visuals.',
+          ['20 static ad creatives/month'].concat(adIncs));
+        if(!summary)summary=summary?summary+' + Ad Creative Full':'Ad Creative Full $1,575/month';
+        cc2++;
+        agSecondaryHtml+=card(false,'Ad Creative — Standard','$875/month · 12 creatives/month','','',['12 static ad creatives/month'].concat(adIncs));
+        agSecondaryHtml+=card(false,'Ad Creative — Starter','$475/month · 6 creatives/month','','',['Up to 6 static ad creatives/month'].concat(adIncs));
+      }else if(S.bud==='growing'){
+        agPrimaryHtml+=card(cc2===0,'Ad Creative — Standard','$875/month · 12 creatives/month','',
+          'Static ad creatives built to your provided guidelines. You provide direction — we deliver polished visuals.',
+          ['12 static ad creatives/month'].concat(adIncs));
+        if(!summary)summary=summary?summary+' + Ad Creative Standard':'Ad Creative Standard $875/month';
+        cc2++;
+        agSecondaryHtml+=card(false,'Ad Creative — Full','$1,575/month · 20 creatives/month','','',['20 static ad creatives/month'].concat(adIncs));
+        agSecondaryHtml+=card(false,'Ad Creative — Starter','$475/month · 6 creatives/month','','',['Up to 6 static ad creatives/month'].concat(adIncs));
+      }else{
+        agPrimaryHtml+=card(cc2===0,'Ad Creative — Starter','$475/month · 6 creatives/month','',
+          'Static ad creatives built to your provided guidelines. You provide direction — we deliver polished visuals.',
+          ['Up to 6 static ad creatives/month'].concat(adIncs));
+        if(!summary)summary=summary?summary+' + Ad Creative Starter':'Ad Creative Starter $475/month';
+        cc2++;
+        agSecondaryHtml+=card(false,'Ad Creative — Standard','$875/month · 12 creatives/month','','',['12 static ad creatives/month'].concat(adIncs));
+        agSecondaryHtml+=card(false,'Ad Creative — Full','$1,575/month · 20 creatives/month','','',['20 static ad creatives/month'].concat(adIncs));
+      }
+    }
+
+    // FALLBACK
+    if(cc2===0){
+      agPrimaryHtml+=card(true,"Not sure which fits?","Let\'s talk",'',
+        "Based on your answers we\'d love to scope this on a quick call.",
+        ["Book a discovery call and we\'ll put together exactly what you need"]);
+      summary='Discovery call needed';
+    }
+
+    // Agency client addons — always go in secondary buffer
+    if(S.clAdds&&S.clAdds.length&&S.clAdds[0]!=='cl_none'){
+      if(S.clAdds.indexOf('cl_web')>-1){
+        var wd=wlDisc[S.ac]||1;
+        var w1=Math.round(1800*wd), w2=Math.round(3000*wd), w3=Math.round(6000*wd);
+        var webDiscNote=S.ac&&S.ac!=='wl1'?discNote[S.ac]:'';
+        agSecondaryHtml+=card(false,'Client Websites','$'+w1+' / $'+w2+' / $'+w3+' · one-time'+webDiscNote,'',
+          'Custom websites built for your clients. Scope and pricing confirmed on your call.',
+          ['One-page site — $'+w1+' · 3-5 day turnaround','3-page site — $'+w2+' · 1 week turnaround','6-page site — $'+w3+' · 1 week turnaround','Color palette and font pairings included in all builds','Wordmark logo included in 6-page build']);
+      }
+      if(S.clAdds.indexOf('cl_brand')>-1){
+        agSecondaryHtml+=card(false,'Client Mini Branding','$500 per client · one-time','',
+          'Color palette, font pairings, and wordmark logo for each client who needs a brand foundation.',
+          ['Color palette','Font pairings','Wordmark logo','Delivered as a brand guide per client']);
+      }
+    }
+
+    // Assemble: primaries first, ONE shared blue bar, then secondaries
+    html+=agPrimaryHtml;
+    var agEmailCapHtml='<div class="r-email-cap"><p class="r-email-label">Want us to connect? We can chat about the possibilities.</p><div class="r-email-row"><input type="email" id="res-email" placeholder="your@email.com"><button onclick="submitEmail()">Let\'s connect</button></div><p id="res-email-confirm" style="display:none;font-size:12px;color:var(--bk);margin-top:0.5rem">✓ Got it — we\'ll be in touch within 48 hours.</p></div>';
+    if(agSecondaryHtml){
+      html+=agEmailCapHtml;
+      html+=blueBar();
+      html+=agSecondaryHtml;
+    }else{
+      html+=agEmailCapHtml;
+    }
+  }else{
+    // OWNER PATH — built around Q2 selections (what they need help with)
+    var webIncMap={
+      onepage:['Built for storytelling — one beautifully designed page that guides visitors to a single clear action','3-5 day turnaround','Color palette and font pairings included','Built in Squarespace'],
+      threepage:['Full custom build — home, about, services','1 week turnaround','Color palette and font pairings included','Built in Squarespace','E-commerce, booking, or shop pages available as add-ons'],
+      sixpage:['Comprehensive custom build','1 week turnaround','Color palette, font pairings, and wordmark logo included','Built in Showit, Squarespace, Shopify, or Wix',"Need something else or a custom build? Just let us know — we'll send you a separate quote."]
+    };
+    var webPriceMap={onepage:'$1,800',threepage:'$3,000',sixpage:'$6,000'};
+    var webTitleMap={onepage:'One-Page Site',threepage:'3-Page Site',sixpage:'6-Page Site'};
+
+    var hasBranding=S.o3.indexOf('logo')>-1&&S.o3.indexOf('colors')>-1&&S.o3.indexOf('fonts')>-1;
+    var hasWebsite=S.o3.indexOf('website')>-1;
+    var oc=0;
+    var primaryHtml='';
+    var secondaryHtml='';
+
+    var sel=S.o2||[];
+
+    // BRANDING — budget determines which package leads
+    if(sel.indexOf('branding')>-1){
+      var leadWithFull=(S.bud==='growing'||S.bud==='ready');
+      var fullCard=function(isPrim,tag){
+        return card(isPrim,'Full Brand Identity','$1,500 · one-time','',
+          'A complete brand identity built from scratch — anchored by a hand-drawn logo and delivered with everything you need to show up consistently everywhere.',
+          ['Hand-drawn custom logo (based on your vision)','Logo variations — primary, horizontal lockup, and stacked','Icon / submark for profile pictures, watermarks, and app icons','Favicon file','All logo colorways — full color, black, white, and reversed','Color palette with HEX, RGB, and CMYK codes','Font pairings with hierarchy guide','Basic brand guidelines document','Business card design (front and back)','Letterhead and email signature','LinkedIn and Facebook social banners','Two rounds of revisions included','All files in print-ready and web formats'],tag);
+      };
+      var miniCard=function(isPrim,tag){
+        return card(isPrim,'Mini Brand Refresh','$500 · one-time','','Color palette, font pairings, and wordmark logo — the foundation your brand needs.',['Color palette (HEX, RGB, CMYK codes included)','Font pairings','Wordmark logo','Delivered as a one page brand guide'],tag);
+      };
+      if(leadWithFull){
+        primaryHtml+=fullCard(oc===0,'Branding Option');
+        if(!summary)summary='Full Brand Identity $1,500';
+        oc++;
+        secondaryHtml+=miniCard(false,'');
+      }else{
+        primaryHtml+=miniCard(oc===0,'Branding Option');
+        if(!summary)summary='Mini Brand Refresh $500';
+        oc++;
+        secondaryHtml+=fullCard(false,'');
+      }
+    }
+
+    // WEBSITE
+    if(sel.indexOf('website')>-1){
+      if(hasWebsite){
+        extra+='<div class="ac"><strong>You mentioned you already have a website.</strong> Let\'s talk through what\'s not working on your call — sometimes a few targeted edits get you further than a full rebuild.</div>';
+        primaryHtml+=card(oc===0,'VIP Day','$800 · one-time · 8 hours','',
+          'Already have a site but need it cleaned up, optimised, or updated? A VIP Day covers landing page edits, SEO cleanup, and more in one focused day.',
+          ['Up to 8 hours of focused creative work','Landing page edits and web page updates','Bio optimization across platforms','SEO cleanup on existing pages','Strategy session built into the day','Everything delivered same day'],'Website Option');
+        if(!summary)summary='VIP Day $800';
+        oc++;
+      }else if(S.web){
+        primaryHtml+=card(oc===0,webTitleMap[S.web],webPriceMap[S.web]+' · one-time','','A custom website built for your business.',webIncMap[S.web],'Website Option');
+        if(!summary)summary=webTitleMap[S.web]+' '+webPriceMap[S.web];
+        oc++;
+      }else{
+        primaryHtml+=card(oc===0,'Website Build','Starting at $1,800 · one-time','',
+          'Not sure what size you need? Book a discovery call and we\'ll scope it out together.',
+          ['One-page site — $1,800','3-page site — $3,000','6-page site — $6,000','All built in Showit, Squarespace, Shopify, or Wix'],'Website Option');
+        if(!summary)summary='Website Build';
+        oc++;
+      }
+    }
+
+    // SOCIAL MEDIA CONTENT — ONE primary based on budget, rest below shared blue bar
+    if(sel.indexOf('social')>-1){
+      var inPerson=S.loc==='tampa'||S.loc==='orlando'||S.loc==='miami';
+
+      var shootDayCard=function(isPrim,tag){
+        return card(isPrim,'Content Shoot Day','$800 · one-time · 4 hours · in person','',
+          'A focused half-day content shoot built around your brand — so you walk away with a full month of on-brand visuals ready to post.',
+          ['4-hour content shoot','Pre-shoot consultation with goals alignment, mood board, and shot list creation','Minimum one month of on-brand content — photos and behind-the-scenes videos','Styling support and aesthetic guidance'],tag);
+      };
+      var contentDayCard=function(isPrim,tag){
+        return card(isPrim,'Your Monthly Content Day','$875/month','',
+          "This works best when you've got existing photo or video assets to pull from — a past brand shoot, professional photography, or quality stock. If you're starting from scratch with no visual library yet, a Content Shoot Day might be the better fit first.",
+          ['One focused day each month where we build your entire month of content','You bring the photos and footage you already have — we turn it into polished, on-brand posts','12 posts/month — carousels, graphics, and up to 2 reels','Assets delivered into a shared drive set up for you','Month-to-month · 30 days notice required','+$200/month to add scheduling to 1 platform via Frame.io · Includes Slack channel'],tag);
+      };
+      var vaultCard=function(isPrim,tag){
+        return card(isPrim,'Visibility Vault','$2,075/month · 3-month commitment (or $1,975/month at 6 months)','',
+          'Fully managed — content, posting, and active engagement, so your audience grows while you focus on your business.',
+          ['3 posts per week — static, carousel, reels','Story management 3x/week','Caption writing and hashtag optimization','3x weekly engagement sessions and community building','DM and inquiry management','Quarterly analytics overview','2 platforms managed'],tag);
+      };
+      var polishedCard=function(isPrim,tag){
+        return card(isPrim,'Present & Polished','$1,575/month · 3-month commitment','',
+          'Strategy and posting handled for you — you approve, we build everything.',
+          ['12 posts/month — carousels, graphics, and up to 4 reels','Two platforms covered (IG, Threads, Pinterest, or Facebook only)','Strategy, direction, and captions written by Kind By Design NYC','We build everything for you','Scheduling, stories, links, and polls managed','Dedicated one-on-one Slack channel'],tag);
+      };
+
+      // Pick ONE primary based on budget
+      if(S.bud==='ready'){
+        primaryHtml+=vaultCard(oc===0,'Social Media Option');
+        if(!summary)summary='Visibility Vault $2,075/month';
+        oc++;
+      }else if(S.bud==='growing'){
+        primaryHtml+=polishedCard(oc===0,'Social Media Option');
+        if(!summary)summary='Present & Polished $1,575/month';
+        oc++;
+      }else{
+        primaryHtml+=contentDayCard(oc===0,'Social Media Option');
+        if(!summary)summary='Your Monthly Content Day $875/month';
+        oc++;
+      }
+
+      // Everything else goes into the shared secondary buffer
+      if(S.bud==='ready'){
+        secondaryHtml+=polishedCard(false,'');
+        secondaryHtml+=contentDayCard(false,'');
+      }else if(S.bud==='growing'){
+        secondaryHtml+=contentDayCard(false,'');
+      }
+      if(inPerson)secondaryHtml+=shootDayCard(false,'');
+    }
+
+    // OVERALL MARKETING HELP — budget determines which leads
+    if(sel.indexOf('marketing')>-1){
+      var vipCard2=function(isPrim,tag){
+        return card(isPrim,'VIP Day','$800 · one-time · 8 hours','',
+          'A full day dedicated to miscellaneous tasks — social media templates, ad creative, website edits, and misc designs, all built and branded in one sitting.',
+          ['Up to 8 hours of focused creative work','Social media templates built and branded','Ad creative and campaign visuals built and branded','Bio optimization across platforms','Landing page on your existing site or web page edits','Printed assets, banners, SEO cleanup on existing pages','Strategy session built into the day','Everything delivered same day'],tag);
+      };
+      var btsCard=function(isPrim,tag){
+        return card(isPrim,'Behind the Scenes Team','Two payments of $2,500 · 2-month sprint','',
+          'Not just one thing — a full growth partnership. We come in, look at everything honestly, fix what is broken, build what is missing, and put the systems in place that let your business grow steadily.',
+          ['Full brand audit across every channel','Social media strategy, direction, and optimization','On-brand templates, font pairings, color direction','Website audit with CTA adjustments','SEO foundations across website and social','Email marketing touch points built','Freebie strategy and lead magnet created or refined','Referral program designed and set up','Partnership identification and outreach','Monthly strategy call plus submission review'],tag);
+      };
+
+      if(S.bud==='ready'){
+        primaryHtml+=btsCard(oc===0,'Marketing Option');
+        if(!summary)summary='Behind the Scenes Team';
+        oc++;
+        secondaryHtml+=vipCard2(false,'');
+      }else{
+        primaryHtml+=vipCard2(oc===0,'Marketing Option');
+        if(!summary)summary='VIP Day $800';
+        oc++;
+        secondaryHtml+=btsCard(false,'');
+      }
+      if(!hasBranding){
+        extra+='<div class="ac"><strong>Don\'t have branding set up yet?</strong> We can add it to this package — or check out the Mini Brand Refresh ($500) and Full Brand Identity ($1,500) for standalone brand builds.</div>';
+      }
+    }
+
+    // FALLBACK — nothing selected at all
+    if(oc===0){
+      primaryHtml+=card(true,'Strategy Hour','$100 · one-time · 1 hour','',
+        "Not sure where to start? This is the lowest-commitment way to get clarity on your next move.",
+        ['Pre-call questionnaire sent in advance','One hour of focused strategy and direction','AI-assisted notes during the call','Clean next-steps document delivered after']);
+      if(!summary)summary='Strategy Hour $100';
+      oc++;
+    }
+
+    // Assemble: all primaries first, then ONE shared blue bar, then all secondaries
+    html+=primaryHtml;
+    var emailCapHtml='<div class="r-email-cap"><p class="r-email-label">Want us to connect? We can chat about the possibilities.</p><div class="r-email-row"><input type="email" id="res-email" placeholder="your@email.com"><button onclick="submitEmail()">Let\'s connect</button></div><p id="res-email-confirm" style="display:none;font-size:12px;color:var(--bk);margin-top:0.5rem">✓ Got it — we\'ll be in touch within 48 hours.</p></div>';
+    if(secondaryHtml){
+      html+=emailCapHtml;
+      html+=blueBar();
+      html+=secondaryHtml;
+    }else{
+      html+=emailCapHtml;
+    }
+  }
+
+  // Build detailed summary for Zapier email
+  var details=[];
+  details.push('WHO: '+(S.who==='agency'?'Agency owner':'Business owner'));
+  details.push('BUDGET: '+(S.bud==='starter'?'Just getting started':S.bud==='growing'?'Growing steadily':'Ready to invest fully'));
+  if(S.who==='owner'){
+    if(S.o2&&S.o2.length){
+      var o2map={branding:'Branding',social:'Social media content',website:'Website',marketing:'Overall marketing help'};
+      details.push('NEEDS HELP WITH: '+S.o2.map(function(x){return o2map[x]||x}).join(', '));
+    }
+    if(S.o3&&S.o3.length){
+      var o3map={logo:'Logo',colors:'Color palette',fonts:'Font pairings',website:'Website',none:'None yet'};
+      details.push('CURRENTLY HAS: '+S.o3.map(function(x){return o3map[x]||x}).join(', '));
+    }
+    if(S.loc){var locmap={tampa:'Tampa',orlando:'Orlando',miami:'Miami',nyc:'NYC',other:'Other'};details.push('LOCATION: '+(locmap[S.loc]||S.loc));}
+    if(S.web){var wl2={onepage:'One-page site $1,800',threepage:'3-page site $3,000',sixpage:'6-page site $6,000'};details.push('WEBSITE NEEDED: '+wl2[S.web]);}
+  }
+  if(S.who==='agency'){
+    if(S.aa)details.push('ASSET TYPE: '+(S.aa==='social'?'Social content':S.aa==='ads'?'Ad creative':'Both social and ads'));
+    if(S.ab)details.push('FOR: '+(S.ab==='own'?'Own agency':S.ab==='clients'?'Clients':'Own agency and clients'));
+    if(S.ac){var clmap={wl1:'1-3 clients',wl2:'4-6 clients (10% discount)',wl3:'7-10 clients (15% discount)'};details.push('CLIENT COUNT: '+clmap[S.ac]);}
+    if(S.ap)details.push('SCHEDULING: '+(S.ap==='yes'?'Yes — handle scheduling and posting':'No — handles own posting'));
+  }
+  if(S.clAdds&&S.clAdds.length&&S.clAdds[0]!=='cl_none'){var camap={'cl_web':'Websites for clients','cl_brand':'Mini branding for clients'};details.push('CLIENT ADD-ONS: '+S.clAdds.map(function(x){return camap[x]||x}).join(', '));}
+  details.push('RECOMMENDED: '+(allCards.length?allCards.join(' | '):'See results'));
+  var fullSummary=details.join(' | ');
+
+  html+=extra;
+  html+='<div class="dv"></div>'+
+    '<p class="r-eyebrow">Ready to get started?</p>'+
+
+    '<div class="cw">'+
+    '<a id="hb-btn" href="https://kindbydesignnyc.hbportal.co/schedule/69f904cb679df98b5ce94a96" target="_blank" class="cp">Book a discovery call</a>'+
+    '<a href="pricing.html" target="_blank" class="cs">View all packages & pricing</a>'+
+    '<a href="https://www.kindbydesignnyc.com/our-work" target="_blank" class="cs">View our work</a>'+
+    '</div>'+
+
+
+    '<div style="margin-top:1.5rem;padding:1rem 0;border-top:1px solid var(--br)">'+
+    '<p style="font-size:13px;color:var(--gr);font-weight:300;margin-bottom:0.75rem">Not ready to commit to a big package, but want to leave with some guidance?</p>'+
+    '<a href="https://buy.stripe.com/4gM28rcqc1Nzfzhb918EM00" target="_blank" style="font-size:13px;color:var(--bd);font-weight:400;text-decoration:underline">Book a Strategy Hour — $100</a>'+
+    '</div>'+
+    '<div class="rs"><button onclick="rst()">Start over</button></div>';
+
+  document.getElementById('rb').className='result active';
+  document.getElementById('rb').innerHTML=html;
+
+  // Silent background submission to Splitforms (no email required — fires on results render)
+  var detailLines = details.join('\n').replace(/https?:\/\/[^\s]*/g,'').replace(/[|{}]/g,'');
+  var cleanMsg = detailLines;
+
+  fetch('https://splitforms.com/api/submit', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json', 'Accept': 'application/json'},
+    body: JSON.stringify({
+      access_key: 'ae85765232d342508db8caffaa5d8561',
+      name: 'Quiz Submission',
+      email: 'noreply@kindbydesignnyc.com',
+      message: cleanMsg,
+      botcheck: ''
+    })
+  }).then(function(r){return r.json();}).then(function(d){
+    if(!d.success)console.log('Splitforms error:',d);
+  }).catch(function(e){console.log('Splitforms catch:',e);});
+}
+
+function submitEmail(){
+  var emailEl=document.getElementById('res-email');
+  var confirmEl=document.getElementById('res-email-confirm');
+  if(!emailEl||!emailEl.value)return;
+  var email=emailEl.value;
+  var detailLines=(allCards.length?allCards.join(' | '):'See results');
+  fetch('https://splitforms.com/api/submit', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json', 'Accept': 'application/json'},
+    body: JSON.stringify({
+      access_key: 'ae85765232d342508db8caffaa5d8561',
+      name: 'Quiz Result Request',
+      email: email,
+      message: 'Email capture from quiz results.\n\nRecommended: '+detailLines,
+      botcheck: ''
+    })
+  }).then(function(r){return r.json();}).then(function(d){
+    if(confirmEl){emailEl.style.display='none';confirmEl.style.display='block';}
+  }).catch(function(){
+    if(confirmEl){emailEl.style.display='none';confirmEl.style.display='block';}
+  });
+}
+
+function rst(){
+  S={who:null,aa:null,ab:null,ac:null,ap:null,bud:null,o2:[],o3:[],web:null,loc:null,clAdds:[]};
+  _sub={name:'',email:'',biz:'',summary:'',newsletter:''};H=[];
+  document.querySelectorAll('.opt').forEach(function(x){x.classList.remove('on')});
+  ['n1','n2a','n2b','n2c','n3a','nba','no-web','no-loc','no-bud'].forEach(function(id){var b=document.getElementById(id);if(b)b.disabled=true;});
+  document.getElementById('rb').className='result';
+  document.getElementById('rb').innerHTML='';
+  gt('s1');
+}
+</script>
+</body>
+</html>
